@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main, vulnerable, secure]
+  pull_request:
+    branches: [main, vulnerable, secure]
+
+jobs:
+  backend-tests:
+    name: Tests unitaires et d'intégration (PHPUnit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, sqlite3, pdo_sqlite
+          coverage: none
+
+      - name: Installation des dépendances Composer
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Préparation de l'environnement
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Tests unitaires
+        run: php artisan test --testsuite=Unit
+
+      - name: Tests d'intégration
+        run: php artisan test --testsuite=Feature
+
+  e2e-tests:
+    name: Test E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: backend-tests
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, sqlite3, pdo_sqlite
+          coverage: none
+
+      - name: Installation des dépendances Composer
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Préparation de l'environnement
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+
+      - name: Installation de Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Installation des dépendances npm
+        run: npm ci
+
+      - name: Installation des navigateurs Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Exécution du test E2E
+        env:
+          CI: true
+        run: npx playwright test
+
+      - name: Publication du rapport Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
