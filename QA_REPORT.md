@@ -16,9 +16,10 @@
 ## 2. Fonctionnalités développées
 
 - Créer une tâche (titre, priorité, date d'échéance optionnelle).
-- Refuser la création d'une tâche sans titre (ou dont le titre est vide/uniquement composé
-  d'espaces).
-- Refuser la création d'une tâche avec une priorité non autorisée.
+- Modifier une tâche existante (titre, priorité, date d'échéance).
+- Refuser la création ou la modification d'une tâche sans titre (ou dont le titre est
+  vide/uniquement composé d'espaces).
+- Refuser la création ou la modification d'une tâche avec une priorité non autorisée.
 - Marquer une tâche comme terminée.
 - Supprimer une tâche.
 - Lister les tâches avec un filtre (`all`, `pending`, `late`, `completed`).
@@ -244,10 +245,10 @@ Total : 16 tests unitaires, 16 assertions.
 
 | Fichier | Cas couverts |
 |---|---|
-| `tests/Feature/Api/TaskApiTest.php` | création valide (201), titre manquant (422), priorité invalide (422), filtrage `status=late`, complétion d'une tâche en retard, suppression (204), tâche introuvable (404) |
+| `tests/Feature/Api/TaskApiTest.php` | création valide (201), titre manquant (422), priorité invalide (422), modification valide (200), modification avec titre vide (422), modification avec priorité invalide (422), filtrage `status=late`, complétion d'une tâche en retard, suppression (204), tâche introuvable (404) |
 | `tests/Feature/Web/TaskWebTest.php` | affichage de la liste, création via formulaire + redirection, formulaire invalide → erreur affichée, aucune tâche créée |
 
-Total : 10 tests d'intégration, 29 assertions.
+Total : 13 tests d'intégration, 37 assertions.
 
 ## 9. Test E2E réalisé
 

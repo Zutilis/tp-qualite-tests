@@ -44,6 +44,52 @@ class TaskApiTest extends TestCase
         $this->assertDatabaseCount('tasks', 0);
     }
 
+    public function test_it_updates_a_task_with_valid_data(): void
+    {
+        $task = Task::factory()->create([
+            'title' => 'Ancien titre',
+            'priority' => 'low',
+        ]);
+
+        $response = $this->putJson("/api/tasks/{$task->id}", [
+            'title' => 'Nouveau titre',
+            'priority' => 'high',
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('data.title', 'Nouveau titre');
+        $response->assertJsonPath('data.priority', 'high');
+        $this->assertDatabaseHas('tasks', [
+            'id' => $task->id,
+            'title' => 'Nouveau titre',
+            'priority' => 'high',
+        ]);
+    }
+
+    public function test_it_rejects_an_update_that_clears_the_title(): void
+    {
+        $task = Task::factory()->create(['title' => 'Titre initial']);
+
+        $response = $this->putJson("/api/tasks/{$task->id}", [
+            'title' => '   ',
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('tasks', ['id' => $task->id, 'title' => 'Titre initial']);
+    }
+
+    public function test_it_rejects_an_update_with_an_invalid_priority(): void
+    {
+        $task = Task::factory()->create(['priority' => 'low']);
+
+        $response = $this->putJson("/api/tasks/{$task->id}", [
+            'priority' => 'urgentissime',
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('tasks', ['id' => $task->id, 'priority' => 'low']);
+    }
+
     public function test_it_lists_only_late_tasks_when_filtering_by_status(): void
     {
         Task::factory()->create([

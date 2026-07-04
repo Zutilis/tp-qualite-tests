@@ -66,6 +66,65 @@ Le fichier `playwright.config.ts` démarre automatiquement `php artisan serve --
 et réinitialise la base de données (`php artisan migrate:fresh`) avant l'exécution des tests,
 aucune manipulation manuelle n'est donc nécessaire.
 
+## Preuve d'exécution des tests
+
+Sortie réelle de `php artisan test` (29 tests, 53 assertions, aucun échec) :
+
+```
+   PASS  Tests\Unit\Domain\TaskLatenessTest
+  ✓ a task with a past due date and not completed is late
+  ✓ a completed task is never late even past its due date
+  ✓ a task with a future due date is not late
+  ✓ a task without a due date is never late
+  ✓ a task due at the exact current instant is not yet late
+  ✓ it counts only the late tasks in a list
+  ✓ it counts zero late tasks on an empty list
+
+   PASS  Tests\Unit\Domain\TaskPriorityTest
+  ✓ it accepts authorised priorities with data set "low"
+  ✓ it accepts authorised priorities with data set "medium"
+  ✓ it accepts authorised priorities with data set "high"
+  ✓ it rejects an unknown priority
+  ✓ it rejects an empty priority
+
+   PASS  Tests\Unit\Domain\TaskRulesTest
+  ✓ it rejects a null title
+  ✓ it rejects an empty title
+  ✓ it rejects a title made only of whitespace
+  ✓ it accepts a valid title
+
+   PASS  Tests\Feature\Api\TaskApiTest
+  ✓ it creates a task with valid data
+  ✓ it rejects a task without a title
+  ✓ it rejects a task with an invalid priority
+  ✓ it updates a task with valid data
+  ✓ it rejects an update that clears the title
+  ✓ it rejects an update with an invalid priority
+  ✓ it lists only late tasks when filtering by status
+  ✓ completing a task removes it from the late list
+  ✓ it deletes a task
+  ✓ it returns 404 for a missing task
+
+   PASS  Tests\Feature\Web\TaskWebTest
+  ✓ the home page lists existing tasks
+  ✓ submitting the form creates a task and redirects to the list
+  ✓ submitting the form without a title shows an error and does not create a task
+
+  Tests:    29 passed (53 assertions)
+  Duration: 0.31s
+```
+
+Sortie réelle de `npx playwright test` (2 tests E2E, aucun échec) :
+
+```
+Running 2 tests using 1 worker
+
+  ✓  1 [chromium] › tests/e2e/tasks.spec.ts:4:5 › Parcours utilisateur - gestion des tâches › un utilisateur crée une tâche et la voit apparaître dans la liste (661ms)
+  ✓  2 [chromium] › tests/e2e/tasks.spec.ts:18:5 › Parcours utilisateur - gestion des tâches › une tâche en retard disparaît du compteur une fois terminée (270ms)
+
+  2 passed (2.4s)
+```
+
 ## Fonctionnalités
 
 - Créer une tâche (titre, priorité, date d'échéance optionnelle)
