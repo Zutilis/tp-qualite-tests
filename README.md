@@ -113,11 +113,3 @@ testée unitairement sans base de données ni bootstrap Laravel.
 
 - [`QA_REPORT.md`](./QA_REPORT.md) : stratégie qualité, démarche TDD documentée, couverture de
   tests, CI/CD, limites et améliorations possibles.
-- [`SECURITY_AUDIT.md`](./SECURITY_AUDIT.md) : audit de sécurité applicative (branches
-  `vulnerable` et `secure`).
-
-## Organisation des branches
-
-- `main` : version finale, sécurisée, du projet (fusion de `secure`).
-- `vulnerable` : version pédagogique contenant des failles de sécurité volontaires.
-- `secure` : version corrigeant l'ensemble des failles de la branche `vulnerable`.

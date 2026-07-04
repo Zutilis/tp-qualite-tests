@@ -227,9 +227,8 @@ quatre cycles.
   HTML/JS réel ni les interactions navigateur.
 - **Couvert** : validation métier (titre, priorité), calcul du retard, CRUD des tâches, filtrage,
   un parcours de création et un parcours de complétion d'une tâche en retard.
-- **Non couvert** : authentification/autorisation (hors périmètre de ce mini-projet, traité dans
-  `SECURITY_AUDIT.md` sur les branches `vulnerable`/`secure`), pagination, tri avancé,
-  notifications.
+- **Non couvert** : authentification/autorisation (hors périmètre de ce mini-projet), pagination,
+  tri avancé, notifications.
 
 ## 7. Tests unitaires réalisés
 
@@ -269,8 +268,7 @@ d'intégration ne peut garantir.
 ## 10. Pipeline CI/CD
 
 - **Emplacement** : `.github/workflows/ci.yml`.
-- **Déclenchement** : à chaque `push` et `pull_request` sur les branches `main`, `vulnerable` et
-  `secure`.
+- **Déclenchement** : à chaque `push` et `pull_request` sur la branche `main`.
 - **Job `backend-tests`** : installe PHP 8.4 et les dépendances Composer, prépare le fichier
   `.env` et la clé d'application, puis exécute `php artisan test --testsuite=Unit` puis
   `--testsuite=Feature`.
@@ -306,9 +304,8 @@ d'intégration ne peut garantir.
 
 ## 12. Limites actuelles
 
-- Pas d'authentification ni de notion de propriétaire de tâche dans cette partie du projet (la
-  gestion des utilisateurs et des accès est traitée séparément dans l'audit de sécurité, sur les
-  branches `vulnerable`/`secure`).
+- Pas d'authentification ni de notion de propriétaire de tâche : le tableau de bord et l'API
+  sont partagés par tous les utilisateurs, sans compte ni droits d'accès.
 - Pas de pagination : au-delà d'un grand nombre de tâches, la liste complète est chargée à
   chaque requête.
 - Le calcul du retard se fait au niveau du jour (`due_date` est une date sans heure) : deux
@@ -319,8 +316,8 @@ d'intégration ne peut garantir.
 
 ## 13. Améliorations possibles
 
-- Ajouter l'authentification et la notion de propriétaire de tâche dans cette partie
-  également (actuellement traitée uniquement côté audit de sécurité).
+- Ajouter l'authentification et la notion de propriétaire de tâche pour distinguer
+  plusieurs utilisateurs.
 - Ajouter la pagination de la liste des tâches et un tri par priorité/date.
 - Ajouter une mesure de couverture de code dans la CI avec un seuil minimum.
 - Ajouter un test E2E supplémentaire couvrant la suppression d'une tâche et le filtrage par
