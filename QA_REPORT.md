@@ -273,12 +273,18 @@ d'intégration ne peut garantir.
 - **Job `backend-tests`** : installe PHP 8.4 et les dépendances Composer, prépare le fichier
   `.env` et la clé d'application, puis exécute `php artisan test --testsuite=Unit` puis
   `--testsuite=Feature`.
-- **Job `e2e-tests`** (dépend du précédent) : installe PHP, Node 22 et les navigateurs
-  Playwright, puis exécute `npx playwright test` (qui démarre lui-même le serveur Laravel et
-  réinitialise la base). Le rapport HTML Playwright est publié comme artefact du job.
+- **Job `e2e-tests`** (dépend du précédent) : installe PHP, crée le fichier SQLite et exécute
+  `php artisan migrate --force` (le schéma doit exister avant que le serveur ne démarre), installe
+  Node 22 et les navigateurs Playwright, puis exécute `npx playwright test` (qui démarre lui-même
+  `php artisan serve` et réinitialise la base via `migrate:fresh` avant les tests). Le rapport HTML
+  Playwright est publié comme artefact du job.
 - **En cas d'échec** : le job correspondant est marqué en échec et bloque la fusion si une
   protection de branche est configurée ; les logs détaillés (assertions, requêtes/réponses) sont
   disponibles dans l'onglet "Actions" de GitHub.
+- **Vérification réelle** : les deux jobs ont été exécutés sur GitHub Actions (pas seulement en
+  local) après un premier échec du job E2E (le serveur ne répondait pas car la base ne contenait
+  pas encore les tables au démarrage) ; l'ajout de `php artisan migrate --force` avant le
+  démarrage du serveur a corrigé le problème, confirmé par une exécution réussie sur GitHub.
 - **Limites actuelles** : la pipeline ne calcule pas de couverture de code, ne publie pas
   automatiquement l'application, et n'exécute qu'un navigateur (Chromium) pour l'E2E. Ces choix
   sont volontaires pour garder une pipeline simple et rapide, cohérente avec la taille du projet.
